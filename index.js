@@ -104,15 +104,22 @@ async function run() {
             const cartInfo = req.body;
 
             const filter = { menuItemId: cartInfo.menuItemId }
-            const found = await cartCollection.findOne(filter);
+            const found = await cartCollection.find(filter).toArray();
 
-            if (found === null) {
+
+
+            const foundItem = found.find(item => item.email === cartInfo.email)
+
+            if (found === null || !foundItem) {
+
                 const result = await cartCollection.insertOne(cartInfo);
                 return res.send(result)
             } else {
                 return res.send({ message: "Item already been added" })
             }
         })
+
+
 
         app.get("/cart/:email", async (req, res) => {
             const email = req.params.email;
